@@ -118,7 +118,7 @@ def predict_base64_image(name, contents):
         f.write(base64.b64decode(contents))
     
 
-    image=preprocess_image(filepath)
+    image=preprocess_image(file_path)
     prediction=model.predict(image)
     prediction_image= plot_heatmap(image[0])
     os.remove(file_path)
