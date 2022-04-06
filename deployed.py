@@ -61,7 +61,7 @@ def preprocess_image(image):
     return test_image
 
 
-def plot_heatmap(img):
+def plot_heatmap(img,prediction):
   
     # pred = model.predict(np.expand_dims(img, axis=0))
     pred_class = np.argmax(prediction)
@@ -120,7 +120,7 @@ def predict_base64_image(name, contents):
 
     image=preprocess_image(file_path)
     prediction=model.predict(image)
-    prediction_image= plot_heatmap(image[0])
+    prediction_image= plot_heatmap(image[0],prediction)
     os.remove(file_path)
     return {name:prediction_image,confidence:prediction} 
 
