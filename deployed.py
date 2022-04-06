@@ -16,7 +16,7 @@ import re
 import base64
 import tempfile
 
-model=tf.keras.models.load_model('model/model.hdf5')
+model=tf.keras.models.load_model('model.hdf5')
 print("Loaded model")
 
 def img_to_base64_str(img):
