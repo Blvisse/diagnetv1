@@ -154,7 +154,7 @@ def plot_heatmap(img,inspection_code):
         x = peak_coords[i,1]
         plt.gca().add_patch(Rectangle((x-30, y-30), 80,80,linewidth=1,edgecolor='r',facecolor='none'))
     plt.savefig(inspection_code+'.png')
-    print("Saving inspections)
+    print("Saving inspections")
     
     
     image = cv2.imread(inspection_code+".png")
