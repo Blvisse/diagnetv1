@@ -89,16 +89,16 @@ def preprocess_image(image):
         # image=image/255
         # image=image.reshape((1,224,224,3))
     image=cv2.imread(image)
-    image=dicom.dcmread(image)
+    #image=dicom.dcmread(image)
     # image.PhotometricInterpretation = 'RGB'
     # image.SamplesPerPixel = 3
     # image.BitsAllocated = 8
     # image.BitsStored = 8
     # image.HighBit = 7
     # image.add_new(0x00280006, 'US', 0)
-    image=image.pixel_array
-    cv2.imwrite('test.png',image)
-    image=cv2.imread('test.png')
+    #image=image.pixel_array
+    #cv2.imwrite('test.png',image)
+    #image=cv2.imread('test.png')
     print("Re-reading Image")
 
     image=Image.fromarray(image,'RGB')
@@ -170,17 +170,17 @@ def plot_heatmap(img,prediction,inspection_code):
     
     return img_to_base64_str(image)
 
-def predict_base64_image(name,contents):
+def predict_base64_image(name,contents,inspection_code):
     fd, file_path = tempfile.mkstemp()
     print(fd)
           
-    with open('train.DCM','wb') as f:
+    with open(fd,'wb') as f:
         f.write(base64.b64decode(contents))
     print("Stored dicom file")
 
-    image=preprocess_image('train.DCM')
+    image=preprocess_image(file_path)
     prediction=model.predict(image)
-    prediction_image= plot_heatmap(image[0],prediction,'trial')
+    prediction_image= plot_heatmap(image[0],prediction,inspection_code)
     
     # cv2.imwrite("thisimage.png",image)
     #convert to encoding before sending it 
