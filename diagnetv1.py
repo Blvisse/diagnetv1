@@ -170,7 +170,7 @@ def plot_heatmap(img,inspection_code):
     
     return img_to_base64_str(image)
 
-def predict_base64_image(name,contents,inspection_code):
+def predict_base64_image(name,contents):
     fd, file_path = tempfile.mkstemp()
     print(fd)
           
@@ -178,9 +178,9 @@ def predict_base64_image(name,contents,inspection_code):
         f.write(base64.b64decode(contents))
     print("Stored dicom file")
 
-    image=preprocess_image('test.DCM')
+    image=preprocess_image(file_path)
     prediction=model.predict(image)
-    prediction_image= plot_heatmap(image[0],inspection_code)
+    prediction_image= plot_heatmap(image[0],'trial')
     
     # cv2.imwrite("thisimage.png",image)
     #convert to encoding before sending it 
