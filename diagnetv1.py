@@ -160,7 +160,7 @@ def plot_heatmap(img,prediction,inspection_code):
     
     
     image = cv2.imread(inspection_code+".png")
-#     s3.upload_file(Filename=inspection_code+".png",Bucket="chest-predictions",Key=inspection_code+".png")
+    s3.upload_file(Filename=inspection_code+".png",Bucket="chest-predictions",Key=inspection_code+".png")
     print("Saved file to s3 bucket server")
     image=Image.fromarray(image,'RGB')
     image=image.resize((256,256))
@@ -170,7 +170,7 @@ def plot_heatmap(img,prediction,inspection_code):
     
     return img_to_base64_str(image)
 
-def predict_base64_image(name,contents):
+def predict_base64_image(name,contents,inspection_code):
     fd, file_path = tempfile.mkstemp()
     print(fd)
           
@@ -180,7 +180,7 @@ def predict_base64_image(name,contents):
 
     image=preprocess_image(file_path)
     prediction=model.predict(image)
-    prediction_image= plot_heatmap(image[0],prediction,'test12')
+    prediction_image= plot_heatmap(image[0],prediction,inspection_code)
     
     # cv2.imwrite("thisimage.png",image)
     #convert to encoding before sending it 
