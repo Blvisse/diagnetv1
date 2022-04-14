@@ -188,7 +188,7 @@ def predict_base64_image(name,contents):
     
     
     os.remove(file_path)
-    return {name:prediction_image,'confidence':prediction} 
+    return {name:prediction_image,'confidence':prediction.tolist()} 
 
 if __name__ == "__main__":
 
