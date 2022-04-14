@@ -80,6 +80,7 @@ def preprocess_image(image):
     
     '''
     test_image=[]
+    print("Acessing Image preprocessing")
     
         # image=image.resize((224,224))
         # image=tf.keras.preprocessing.image.img_to_array(image)
@@ -96,12 +97,14 @@ def preprocess_image(image):
     image=image.pixel_array
     cv2.imwrite('test.png',image)
     image=cv2.imread('test.png')
+    print("Re-reading Image")
 
     image=Image.fromarray(image,'RGB')
     image=image.resize((256,256))
     test_image.append(np.array(image))
     test_image=np.array(test_image)
     test_image=test_image/255
+    print("Finished reading image")
     
     return test_image
 
@@ -109,7 +112,9 @@ def preprocess_image(image):
 def plot_heatmap(img,inspection_code):
   
     # pred = model.predict(np.expand_dims(img, axis=0))
+    print("accessing model") 
     pred_class = np.argmax(prediction)
+    print("Getting predictions")
     #Get weights for all classes from the prediction layer
     last_layer_weights = model.layers[-1].get_weights()[0] #Prediction layer
    
@@ -135,6 +140,7 @@ def plot_heatmap(img,inspection_code):
     
  
     heat_map[img[:,:,0] == 0] = 0  #All dark pixels outside the object set to 0
+    print("Getting heat-maps")
     
     #Detect peaks (hot spots) in the heat map. We will set it to detect maximum 5 peaks.
     #with rel threshold of 0.5 (compared to the max peak). 
@@ -148,12 +154,15 @@ def plot_heatmap(img,inspection_code):
         x = peak_coords[i,1]
         plt.gca().add_patch(Rectangle((x-30, y-30), 80,80,linewidth=1,edgecolor='r',facecolor='none'))
     plt.savefig(inspection_code+'.png')
+    print("Saving inspections)
     
     
     image = cv2.imread(inspection_code+".png")
     s3.upload_file(Filename=inspection_code+".png",Bucket="chest-predictions",Key=inspection_code+".png")
+    print("Saved file to s3 bucket server")
     image=Image.fromarray(image,'RGB')
     image=image.resize((256,256))
+    print("Done")
     
     #return single image
     
@@ -161,11 +170,13 @@ def plot_heatmap(img,inspection_code):
 
 def predict_base64_image(name, contents,inspection_code):
     fd, file_path = tempfile.mkstemp()
-    with open(fd,'wb') as f:
+    print(fd)
+          
+    with open('test.DCM','wb') as f:
         f.write(base64.b64decode(contents))
-    
+    print("Stored dicom file")
 
-    image=preprocess_image(file_path)
+    image=preprocess_image('test.DCM')
     prediction=model.predict(image)
     prediction_image= plot_heatmap(image[0],inspection_code)
     
