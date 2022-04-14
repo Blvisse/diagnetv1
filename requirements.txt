@@ -6,3 +6,4 @@ matplotlib
 scipy
 scikit-image
 boto3
+pydicom
