@@ -105,6 +105,7 @@ def prediction_image(img,prediction):
     # return prediction
 
 def predict_base64_image(name, contents):
+    print("receiving image")
     fd,file_path=tempfile.mkstemp()
     with open(fd,'wb') as f:
         f.write(base64.b64decode(contents))
