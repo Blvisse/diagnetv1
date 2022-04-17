@@ -16,7 +16,7 @@ from io import BytesIO
 
 
 
-model=tf.keras.models.load_model('../model.hdf5')
+model=tf.keras.models.load_model('model.hdf5')
 
 
 def img_to_base64_str(img):
