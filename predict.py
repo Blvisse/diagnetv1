@@ -110,7 +110,7 @@ def predict_base64_image(name, contents):
     with open(fd,'wb') as f:
         f.write(base64.b64decode(contents))
     print("Stored dicom file")
-    image=preprocess_image(file_path)
+    image=preprocess(file_path)
     
     classes=prediction_image(image[0],model.predict(preprocess(file_path)))
     os.remove(file_path)
