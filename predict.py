@@ -13,10 +13,51 @@ import matplotlib.pyplot as plt
 import scipy
 from tensorflow.keras.models import Model
 from io import BytesIO
+import json
+import httplib2
+import boto3
+import contextlib
 
+aws_access_key_id='AKIARPEY5DNLOXYZDLFZ'
+aws_secret_access_key='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'
+
+@contextlib.contextmanager
+def s3connection(key, secret):
+    print("Connecting to S3")
+    s3 = boto3.client('s3', aws_access_key_id=key, aws_secret_access_key=secret)
+    print("Established Connection")
+    try:
+        yield s3
+    except Exception as e:
+        print("Error occurred: ".format(e))
+        sys.exit(1)
+    # except NoCredentialsError:
+    #     print("Credentials not available")
+    #     sys.exit(1)
+
+    finally:
+        print("Keeping Connection")
+        
+
+with s3connection(aws_access_key_id, aws_secret_access_key) as s3:
+    print("success")
 
 
 model=tf.keras.models.load_model('model.hdf5')
+URL='http://localhost:8042/instances'
+
+def IsJson(content):
+    try:
+        if (sys.version_info >= (3, 0)):
+            json.loads(content.decode())
+            return True
+        else:
+            json.loads(content)
+            return True
+    except Exception as e:
+        print(e)
+        return False
+
 
 
 def img_to_base64_str(img):
@@ -33,6 +74,11 @@ def preprocess(image):
     test_image=[]
     print("Reading DICOM image")
     image=pydicom.dcmread(image)
+    image.StudyInstanceUID='1.3.6.1.4.1.14519.5.2.1.7009.2404.315222469415623828162094912079'
+    image.SeriesInstanceUID='1.3.6.1.4.1.14519.5.2.1.7009.2404.309111601391566216060061725328'
+    image.SOPInstanceUID='1.3.6.1.4.1.14519.5.2.1.7009.2404.170420932819315718805816034120'
+    image.PatientName='Patient_Zero'
+    pydicom.dcmwrite(file_path,image)
     image=image.pixel_array
     cv2.imwrite('test.png',image)
     image=cv2.imread('test.png')
@@ -44,6 +90,45 @@ def preprocess(image):
     print("Done image prep ")
     return test_image
 # prediction=model.predict(preprocess(image))
+def upload_image(path):
+    
+    f=open(path,'rb')
+    content=f.read()
+    f.close()
+    
+    
+    
+    print("Importing file: ")
+    
+    if IsJson(content):
+        print("Ignored JSON file")
+        json_count+=1
+        return
+    try:
+        h=httplib2.Http()
+        headers={'content-type':'application/dicom'}
+        username='demo'
+        password='demo'
+        creds_str=username+':'+password
+        creds_str_bytes=creds_str.encode('ascii')
+        creds_str_bytes_b64=b'Basic '+base64.b64encode(creds_str_bytes)
+        headers['authorization']=creds_str_bytes_b64.decode('ascii')
+        resp,content=h.request(URL,'POST',body=content,headers=headers)
+        
+        
+        if resp.status == 200:
+            print("Successfully uploaded file: ")
+            
+        else:
+            print("Error uploading file: ")
+            print("Is it a dicom file?")
+            
+    except Exception as e:
+        type,value,traceback=sys.exc_info()
+        print(str(value))
+        print("Unable to connect to Orthanc Server")
+        print(e)
+    
 
 def prediction_image(img,prediction):
     # prediction_classes=tf.keras.applications.densenet.decode_predictions(prediction,top=2)
@@ -82,7 +167,7 @@ def prediction_image(img,prediction):
         plt.imshow(heat_map, cmap='jet', alpha=0.30)
         
         plt.savefig('heatmap.png')
-        
+        s3.upload_file(Filename="heatmap.png",Bucket="chest-predictions",Key="trial2.png")
         image=cv2.imread('heatmap.png')
         image=Image.fromarray(image,'RGB')
         image=image.resize((256,256))
@@ -111,7 +196,7 @@ def predict_base64_image(name, contents):
         f.write(base64.b64decode(contents))
     print("Stored dicom file")
     image=preprocess(file_path)
-    
+    upload_image(file_path)
     classes=prediction_image(image[0],model.predict(preprocess(file_path)))
     os.remove(file_path)
     return {name: classes}
