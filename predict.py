@@ -17,6 +17,7 @@ import json
 import httplib2
 import boto3
 import contextlib
+import sys
 
 aws_access_key_id='AKIARPEY5DNLOXYZDLFZ'
 aws_secret_access_key='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'
@@ -44,7 +45,7 @@ with s3connection(aws_access_key_id, aws_secret_access_key) as s3:
 
 
 model=tf.keras.models.load_model('model.hdf5')
-URL='http://localhost:8042/instances'
+URL='http://127.0.0.1:8042/instances'
 
 def IsJson(content):
     try:
