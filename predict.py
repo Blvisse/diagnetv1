@@ -69,11 +69,11 @@ def img_to_base64_str(img):
     
     return img_str
 
-def preprocess(image):
+def preprocess(file_path):
     print("Begining image preprocessing")
     test_image=[]
     print("Reading DICOM image")
-    image=pydicom.dcmread(image)
+    image=pydicom.dcmread(file_path)
     image.StudyInstanceUID='1.3.6.1.4.1.14519.5.2.1.7009.2404.315222469415623828162094912079'
     image.SeriesInstanceUID='1.3.6.1.4.1.14519.5.2.1.7009.2404.309111601391566216060061725328'
     image.SOPInstanceUID='1.3.6.1.4.1.14519.5.2.1.7009.2404.170420932819315718805816034120'
