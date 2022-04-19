@@ -45,7 +45,7 @@ with s3connection(aws_access_key_id, aws_secret_access_key) as s3:
 
 
 model=tf.keras.models.load_model('model.hdf5')
-URL='http://127.0.0.1:8042/instances'
+URL='https://diagnet-demo.herokuapp.com/instances'
 
 def IsJson(content):
     try:
@@ -131,7 +131,7 @@ def upload_image(path):
         print(e)
     
 
-def prediction_image(img,prediction):
+def prediction_image(img,prediction,inspection_code):
     # prediction_classes=tf.keras.applications.densenet.decode_predictions(prediction,top=2)
     # pred_class = np.argmax(prediction)
 #    text=None
@@ -168,7 +168,7 @@ def prediction_image(img,prediction):
         plt.imshow(heat_map, cmap='jet', alpha=0.30)
         
         plt.savefig('heatmap.png')
-        s3.upload_file(Filename="heatmap.png",Bucket="chest-predictions",Key="trial2.png")
+        s3.upload_file(Filename="heatmap.png",Bucket="chest-predictions",Key=inspection_code+".png")
         image=cv2.imread('heatmap.png')
         image=Image.fromarray(image,'RGB')
         image=image.resize((256,256))
@@ -190,7 +190,7 @@ def prediction_image(img,prediction):
     
     # return prediction
 
-def predict_base64_image(name, contents):
+def predict_base64_image(name,inspection_code,contents):
     print("receiving image")
     fd,file_path=tempfile.mkstemp()
     with open(fd,'wb') as f:
@@ -198,7 +198,7 @@ def predict_base64_image(name, contents):
     print("Stored dicom file")
     image=preprocess(file_path)
     upload_image(file_path)
-    classes=prediction_image(image[0],model.predict(preprocess(file_path)))
+    classes=prediction_image(image[0],model.predict(preprocess(file_path)),inspection_code)
     os.remove(file_path)
     return {name: classes}
 
