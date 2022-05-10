@@ -378,11 +378,12 @@ def predict_base64_image(name,patient_name,inspection_code,contents):
     with open(fd,'wb') as f:
         f.write(base64.b64decode(contents))
     print("Stored dicom file")
-    image=preprocess(file_path,patient_name,int(inspection_code))
+    image=preprocess(file_path,patient_name,inspection_code)
     anomaly_image=preprocess_image(file_path)
-    upload_image(file_path,inspection_code)
-    classes=prediction_image(image[0],model.predict(preprocess(file_path)),inspection_code)
+    upload_image(file_path,int(inspection_code))
     anomaly_analysis=check_anomaly(anomaly_image)
+    classes=prediction_image(image[0],model.predict(image),inspection_code)
+    
     os.remove(file_path)
     return {name: classes,patient_name:anomaly_analysis}
 
