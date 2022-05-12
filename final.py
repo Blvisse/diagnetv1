@@ -293,11 +293,13 @@ def check_anomaly(image):
    
     print(image.shape)
     print("reshaping image")
+    
     image=image[:,:,:,np.newaxis]
     print(image.shape)
     
    
     print("Entering Encoder phase")
+    print(anomaly_detector.summary())
     encoded_img=anomaly_detector.predict([[image]])
     encoded_img = [np.reshape(image, (8*8*4)) for image in encoded_img]
     
