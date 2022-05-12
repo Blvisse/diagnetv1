@@ -1,7 +1,4 @@
 import os 
-
-
-
 import base64
 import tempfile
 import numpy as np
@@ -28,13 +25,9 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, UpSampling2D
 from tensorflow.keras.layers import LeakyReLU
 from sklearn.neighbors import KernelDensity
 import joblib
-
-
 kde=joblib.load('kerneldens.pkl')
-
 aws_access_key_id='AKIARPEY5DNLOXYZDLFZ'
 aws_secret_access_key='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'
-
 @contextlib.contextmanager
 def s3connection(key, secret):
     print("Connecting to S3")
@@ -89,14 +82,11 @@ def connection_sql():
 #     print ("Connectied to rds prepping for data entry")
 
 connection,cursor=connection_sql()
-
 #change here
 model=tf.keras.models.load_model('model.hdf5')
 anomaly_detector=tf.keras.models.load_model('Encoder.hdf5')
 # anomaly_weightts=tf.keras.models.load_model('../anomaly11.hdf5')
-
 URL='https://diagnosoftdicom.azurewebsites.net/pacs/instances'
-
 def IsJson(content):
     try:
         if (sys.version_info >= (3, 0)):
@@ -109,8 +99,6 @@ def IsJson(content):
         print(e)
         return False
 
-
-
 def img_to_base64_str(img):
     buffered=BytesIO()
     img.save(buffered,format="PNG")
@@ -119,7 +107,6 @@ def img_to_base64_str(img):
     img_str="data:image/png;base64,"+base64.b64encode(img_bytes).decode()
     
     return img_str
-
 def preprocess(file_path,p_name,inspection_code):
     print("Begining image preprocessing")
     test_image=[]
@@ -145,7 +132,6 @@ def preprocess(file_path,p_name,inspection_code):
     print("Done image prep ")
     return test_image
 # prediction=model.predict(preprocess(image))
-
 def preprocess_image(image):
     '''
     This function preprocesses the image
@@ -236,7 +222,6 @@ def upload_image(path,inspection_code):
         print("Unable to connect to Orthanc Server")
         print(e)
     
-
 def prediction_image(img,prediction,inspection_code):
     # prediction_classes=tf.keras.applications.densenet.decode_predictions(prediction,top=2)
     # pred_class = np.argmax(prediction)
@@ -370,7 +355,6 @@ def check_anomaly(image):
     else:
         text="The image is NOT an anomaly"
         return [{'text':text,'with given density':density,'Reconstruction error':reconstruction_error}]
-
 
 def predict_base64_image(name,patient_name,inspection_code,contents):
     print("receiving image")
