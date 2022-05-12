@@ -1,4 +1,5 @@
-tensorflow
+tensorflow==2.8.0
+scikit-learn==1.0.2
 opencv-python
 Pillow
 numpy
@@ -9,5 +10,6 @@ boto3
 pydicom
 httplib2
 PyMySQL
-scikit-learn
+
+
 
