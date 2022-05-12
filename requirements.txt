@@ -1,4 +1,4 @@
-tensorflow==2.8.0
+tensorflow
 scikit-learn==1.0.2
 opencv-python
 Pillow
