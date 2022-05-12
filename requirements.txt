@@ -8,5 +8,4 @@ scikit-image
 boto3
 pydicom
 httplib2
-PyMySQL
-scikit-learn
+
