@@ -83,8 +83,11 @@ def connection_sql():
 
 connection,cursor=connection_sql()
 #change here
+print("Fetching models")
 model=tf.keras.models.load_model('model.hdf5')
+print("Fetching anomaly detector")
 anomaly_detector=tf.keras.models.load_model('Encoder.hdf5')
+print(anomaly_detector.summary())
 # anomaly_weightts=tf.keras.models.load_model('../anomaly11.hdf5')
 URL='https://diagnosoftdicom.azurewebsites.net/pacs/instances'
 def IsJson(content):
@@ -288,12 +291,13 @@ def check_anomaly(image):
     
     
    
-    # print(image.shape)
+    print(image.shape)
     print("reshaping image")
     image=image[:,:,:,np.newaxis]
-    # print(image.shape)
+    print(image.shape)
     
    
+    print("Entering Encoder phase")
     encoded_img=anomaly_detector.predict([[image]])
     encoded_img = [np.reshape(image, (8*8*4)) for image in encoded_img]
     
